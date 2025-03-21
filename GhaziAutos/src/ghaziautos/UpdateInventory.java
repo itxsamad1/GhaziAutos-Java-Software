@@ -20,6 +20,12 @@ public class UpdateInventory extends javax.swing.JFrame {
      */
     public UpdateInventory() {
         initComponents();
+        // Set application icon
+        try {
+            setIconImage(new javax.swing.ImageIcon(getClass().getResource("/ghaziautos/ghazi_autos_logo.png")).getImage());
+        } catch (Exception e) {
+            System.out.println("Error loading application icon: " + e);
+        }
     }
 
     /**
@@ -32,6 +38,7 @@ public class UpdateInventory extends javax.swing.JFrame {
     private void initComponents() {
 
         search = new javax.swing.JTextField();
+        searchCompany = new javax.swing.JTextField();
         pname = new javax.swing.JTextField();
         comp = new javax.swing.JTextField();
         quant = new javax.swing.JTextField();
@@ -41,25 +48,57 @@ public class UpdateInventory extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        productTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        productTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+            },
+            new String [] {
+                "Product No.", "Product Name", "Company", "Price", "Quantity"
+            }
+        ));
+        productTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                productTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(productTable);
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 140, 650, 100));
+
+        jButton4.setBackground(new java.awt.Color(255, 51, 51));
+        jButton4.setForeground(new java.awt.Color(255, 255, 255));
+        jButton4.setText("Delete");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 460, 100, 30));
 
         search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchActionPerformed(evt);
             }
         });
-        getContentPane().add(search, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 50, 270, 30));
-        getContentPane().add(pname, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 210, 280, 30));
-        getContentPane().add(comp, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 280, 280, 30));
-        getContentPane().add(quant, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 350, 80, 30));
+        getContentPane().add(search, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 60, 270, 30));
+        getContentPane().add(searchCompany, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 100, 270, 30));
+        getContentPane().add(pname, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 260, 280, 30));
+        getContentPane().add(comp, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 330, 280, 30));
+        getContentPane().add(quant, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 400, 80, 30));
 
+        jLabel7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel7.setToolTipText("Go to Invoice Page");
         jLabel7.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel7MouseClicked(evt);
@@ -67,6 +106,8 @@ public class UpdateInventory extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 170, 40));
 
+        jLabel8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel8.setToolTipText("Go to Sales");
         jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel8MouseClicked(evt);
@@ -74,6 +115,8 @@ public class UpdateInventory extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 250, 170, 40));
 
+        jLabel9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel9.setToolTipText("Go to Main Page");
         jLabel9.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel9MouseClicked(evt);
@@ -89,7 +132,7 @@ public class UpdateInventory extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 50, 120, 30));
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 100, 120, 30));
 
         jButton2.setBackground(new java.awt.Color(51, 153, 255));
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
@@ -99,7 +142,7 @@ public class UpdateInventory extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 430, 100, 30));
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 460, 100, 30));
 
         jButton3.setBackground(new java.awt.Color(51, 153, 255));
         jButton3.setForeground(new java.awt.Color(255, 255, 255));
@@ -113,20 +156,25 @@ public class UpdateInventory extends javax.swing.JFrame {
 
         jLabel6.setFont(new java.awt.Font("Perpetua", 0, 24)); // NOI18N
         jLabel6.setText("Quantity");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 340, 130, 40));
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 400, 130, 40));
 
         jLabel5.setFont(new java.awt.Font("Perpetua", 0, 24)); // NOI18N
         jLabel5.setText("Company");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 270, 130, 40));
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 330, 130, 40));
 
         jLabel4.setFont(new java.awt.Font("Perpetua", 0, 24)); // NOI18N
         jLabel4.setText("Product Name");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 210, 130, 40));
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 260, 130, 40));
 
         jLabel3.setFont(new java.awt.Font("Perpetua", 0, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(51, 153, 255));
         jLabel3.setText("Enter Product No.");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 50, 230, 40));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 60, 230, 40));
+
+        jLabel10.setFont(new java.awt.Font("Perpetua", 0, 24));
+        jLabel10.setForeground(new java.awt.Color(51, 153, 255));
+        jLabel10.setText("Enter Company:");
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 100, 230, 40));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ghaziautos/Add Inventory.png"))); // NOI18N
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 880, 550));
@@ -157,49 +205,138 @@ public class UpdateInventory extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel8MouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        //Update inventory
-        DB_Model_GA db=new DB_Model_GA();
+        // Update inventory
+        DB_Model_GA db = new DB_Model_GA();
         ResultSet rs;
-        try{
-              int st=0;
-              st=db.updateInventory(search.getText(),pname.getText(), comp.getText(), Integer.parseInt(quant.getText()));
-              if(st!=0){
-              JOptionPane.showMessageDialog(this, "Added", "", 1);
-              pname.setText("");
-              comp.setText("");
-              quant.setText("");
-              }else{
-              JOptionPane.showMessageDialog(this, "Error", "", 1);
-              }
-        }catch(Exception e){System.out.println(e);}
+        try {
+            int st = 0;
+            st = db.updateInventory(search.getText(), pname.getText(), comp.getText(), Integer.parseInt(quant.getText()));
+            if(st != 0) {
+                JOptionPane.showMessageDialog(this, "Updated Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                // Clear all fields
+                search.setText("");
+                searchCompany.setText("");
+                pname.setText("");
+                comp.setText("");
+                quant.setText("");
+                
+                // Refresh table
+                try {
+                    rs = db.showInventory();
+                    javax.swing.table.DefaultTableModel tb = (javax.swing.table.DefaultTableModel)productTable.getModel();
+                    tb.setRowCount(0);
+                    while(rs.next()) {
+                        String[] data = {
+                            rs.getString("Number"),
+                            rs.getString("Name"),
+                            rs.getString("Company"),
+                            rs.getString("Price"),
+                            rs.getString("Quantity")
+                        };
+                        tb.addRow(data);
+                    }
+                } catch(Exception ex) {
+                    System.out.println(ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Error updating product", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch(Exception e) {
+            System.out.println(e);
+            JOptionPane.showMessageDialog(this, "Error updating product", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        //search via Number
-        DB_Model_GA db=new DB_Model_GA();
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+        // Search button action - modified to search with both number and company
+        DB_Model_GA db = new DB_Model_GA();
         ResultSet rs;
-        try{
-        rs=db.checkProduct(search.getText());
-        if(rs.next()){
-        pname.setText(rs.getString("Name"));
-        comp.setText(rs.getString("Company"));
-        quant.setText(rs.getString("Quantity"));
-        }
-        else{
-        JOptionPane.showMessageDialog(this,"Any Error Occur","Alert",2);
-        }
-        }catch(Exception e){
+        try {
+            String productNo = search.getText().trim();
+            String company = searchCompany.getText().trim();
+            
+            if(productNo.isEmpty() || company.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter both Product Number and Company", "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            rs = db.checkProduct(productNo, company);
+            javax.swing.table.DefaultTableModel tb = (javax.swing.table.DefaultTableModel)productTable.getModel();
+            tb.setRowCount(0);
+            
+            if(rs.next()) {
+                String[] data = {
+                    rs.getString("Number"),
+                    rs.getString("Name"),
+                    rs.getString("Company"),
+                    rs.getString("Price"),
+                    rs.getString("Quantity")
+                };
+                tb.addRow(data);
+                
+                // Also populate the fields
+                pname.setText(rs.getString("Name"));
+                comp.setText(rs.getString("Company"));
+                quant.setText(rs.getString("Quantity"));
+            } else {
+                JOptionPane.showMessageDialog(this, "Product not found with given Number and Company", "Alert", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch(Exception e) {
             System.out.println(e);
+            JOptionPane.showMessageDialog(this, "Error searching product", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         new Inventory().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void productTableMouseClicked(java.awt.event.MouseEvent evt) {
+        // When a row in the table is clicked, populate the fields
+        int row = productTable.getSelectedRow();
+        if(row != -1) {
+            search.setText(productTable.getValueAt(row, 0).toString());
+            pname.setText(productTable.getValueAt(row, 1).toString());
+            comp.setText(productTable.getValueAt(row, 2).toString());
+            quant.setText(productTable.getValueAt(row, 4).toString());
+        }
+    }
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {
+        // Delete button action
+        if(search.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please select a product to delete", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this, 
+            "Are you sure you want to delete this product?", 
+            "Confirm Delete", 
+            JOptionPane.YES_NO_OPTION);
+            
+        if(confirm == JOptionPane.YES_OPTION) {
+            DB_Model_GA db = new DB_Model_GA();
+            try {
+                int st = db.deleteProduct(search.getText());
+                if(st != 0) {
+                    JOptionPane.showMessageDialog(this, "Product Deleted Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    // Clear fields and table
+                    search.setText("");
+                    pname.setText("");
+                    comp.setText("");
+                    quant.setText("");
+                    ((javax.swing.table.DefaultTableModel)productTable.getModel()).setRowCount(0);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error deleting product", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch(Exception e) {
+                System.out.println(e);
+                JOptionPane.showMessageDialog(this, "Error deleting product", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -242,6 +379,7 @@ public class UpdateInventory extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -253,5 +391,9 @@ public class UpdateInventory extends javax.swing.JFrame {
     private javax.swing.JTextField pname;
     private javax.swing.JTextField quant;
     private javax.swing.JTextField search;
+    private javax.swing.JTextField searchCompany;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable productTable;
+    private javax.swing.JLabel jLabel10;
     // End of variables declaration//GEN-END:variables
 }

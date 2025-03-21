@@ -24,6 +24,12 @@ public class InvoicePage2 extends javax.swing.JFrame {
     String cname;
     public InvoicePage2(String date,String innum,String cname) {
         initComponents();
+        // Set application icon
+        try {
+            setIconImage(new javax.swing.ImageIcon(getClass().getResource("/ghaziautos/ghazi_autos_logo.png")).getImage());
+        } catch (Exception e) {
+            System.out.println("Error loading application icon: " + e);
+        }
         this.date=date;
         this.innum=innum;
         this.cname=cname;
@@ -159,6 +165,8 @@ public class InvoicePage2 extends javax.swing.JFrame {
         qlable.setForeground(new java.awt.Color(255, 51, 51));
         getContentPane().add(qlable, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 500, 100, 30));
 
+        jLabel18.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel18.setToolTipText("Go to Sales");
         jLabel18.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel18MouseClicked(evt);
@@ -166,6 +174,8 @@ public class InvoicePage2 extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 250, 170, 40));
 
+        jLabel11.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel11.setToolTipText("Go to Main Page");
         jLabel11.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel11MouseClicked(evt);
@@ -173,6 +183,8 @@ public class InvoicePage2 extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 114, 170, 40));
 
+        jLabel19.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel19.setToolTipText("Go to Inventory");
         jLabel19.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel19MouseClicked(evt);
@@ -233,72 +245,215 @@ public class InvoicePage2 extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jLabel18MouseClicked
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        // to enter products in the table 
-        DB_Model_GA db=new DB_Model_GA();
-        DefaultTableModel tb=(DefaultTableModel)itable.getModel();
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
+        // OK button handler - first search for product
+        DB_Model_GA db = new DB_Model_GA();
+        ResultSet rs;
         
-        int st=0;
-        try{
-        st=db.sellProduct(d.getText(), i.getText(), c.getText(), pno.getText(), pname.getText(), compname.getText(),Integer.parseInt(price.getText()), Integer.parseInt(quant.getText()));
-        if(st!=0){
-        String data[]={ pno.getText(), pname.getText(), compname.getText(),quant.getText()};
-        tb.addRow(data);
-        st=0;
-        st=db.sellupdate(pno.getText(), Integer.parseInt(quant.getText()));
-        JOptionPane.showMessageDialog(this,"Product Added","Invoice Alert", 1);
-        
+        // Check if product number is empty
+        if(pno.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter Product Number", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        else{
-                JOptionPane.showMessageDialog(this,"Error","Invoice Alert", 2);
 
+        // If quantity is filled, we're adding to table. Otherwise, we're searching.
+        if(!quant.getText().trim().isEmpty()) {
+            addProductToTable();
+            return;
         }
-        }catch(Exception e){
+
+        try {
+            // First check if product exists and get distinct product names
+            rs = db.getProductNames(pno.getText());
+            if (!rs.isBeforeFirst()) { // If ResultSet is empty
+                nlable.setText("Product Not Found");
+                pname.setText("");
+                compname.setText("");
+                price.setText("");
+                return;
+            }
+            
+            nlable.setText("");
+            
+            // Create array of product names
+            java.util.ArrayList<String> productNames = new java.util.ArrayList<>();
+            while(rs.next()) {
+                productNames.add(rs.getString("Name"));
+            }
+            
+            // If only one product name exists
+            if(productNames.size() == 1) {
+                handleProductNameSelection(productNames.get(0));
+            } else {
+                // If multiple product names exist, show selection dialog
+                String[] options = productNames.toArray(new String[0]);
+                int choice = JOptionPane.showOptionDialog(this,
+                    "Select Product Name for " + pno.getText(),
+                    "Select Product Name",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+                
+                if(choice >= 0) {
+                    handleProductNameSelection(options[choice]);
+                }
+            }
+        } catch(Exception e) {
+            System.out.println(e);
+            nlable.setText("Error occurred");
+        }
+    }
+
+    private void handleProductNameSelection(String selectedName) {
+        try {
+            DB_Model_GA db = new DB_Model_GA();
+            // Get companies for the selected product number and name
+            ResultSet rs = db.getProductCompanies(pno.getText(), selectedName);
+            
+            // Create array of companies
+            java.util.ArrayList<String> companies = new java.util.ArrayList<>();
+            while(rs.next()) {
+                companies.add(rs.getString("Company"));
+            }
+            
+            // Set the product name
+            pname.setText(selectedName);
+            
+            // If only one company exists
+            if(companies.size() == 1) {
+                rs = db.getProductByNumberAndCompany(pno.getText(), companies.get(0));
+                if(rs.next()) {
+                    fillProductDetails(rs);
+                }
+            } else {
+                // If multiple companies exist, show selection dialog
+                String[] options = companies.toArray(new String[0]);
+                int choice = JOptionPane.showOptionDialog(this,
+                    "Select Company for " + selectedName,
+                    "Select Company",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+                
+                if(choice >= 0) {
+                    rs = db.getProductByNumberAndCompany(pno.getText(), options[choice]);
+                    if(rs.next()) {
+                        fillProductDetails(rs);
+                    }
+                }
+            }
+        } catch(Exception e) {
+            System.out.println(e);
+            nlable.setText("Error occurred");
+        }
+    }
+
+    private void fillProductDetails(ResultSet rs) {
+        try {
+            pname.setText(rs.getString("Name"));
+            compname.setText(rs.getString("Company"));
+            price.setText(rs.getString("Price"));
+        } catch(Exception e) {
             System.out.println(e);
         }
+    }
+
+    private void addProductToTable() {
+        // Validate all required fields are filled
+        if(pno.getText().trim().isEmpty() || pname.getText().trim().isEmpty() || 
+           compname.getText().trim().isEmpty() || price.getText().trim().isEmpty() || 
+           quant.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill all fields", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        DB_Model_GA db = new DB_Model_GA();
+        DefaultTableModel tb = (DefaultTableModel)itable.getModel();
         
+        // Check for duplicate entries
+        for(int i = 0; i < tb.getRowCount(); i++) {
+            if(tb.getValueAt(i, 0).toString().equals(pno.getText()) && 
+               tb.getValueAt(i, 2).toString().equals(compname.getText())) {
+                JOptionPane.showMessageDialog(this, "This product is already added to the invoice", "Warning", JOptionPane.WARNING_MESSAGE);
+                clearFields();
+                return;
+            }
+        }
         
-    }//GEN-LAST:event_jButton2ActionPerformed
+        try {
+            // First check if quantity is available
+            ResultSet rs = db.checkQuantity(pno.getText(), Integer.parseInt(quant.getText()));
+            if(!rs.next()) {
+                JOptionPane.showMessageDialog(this, "Requested quantity not available in stock", "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            int st = db.sellProduct(d.getText(), i.getText(), c.getText(), 
+                                  pno.getText(), pname.getText(), compname.getText(),
+                                  Integer.parseInt(price.getText()), 
+                                  Integer.parseInt(quant.getText()));
+            if(st != 0) {
+                String data[] = {pno.getText(), pname.getText(), compname.getText(), quant.getText()};
+                tb.addRow(data);
+                st = db.sellupdate(pno.getText(), Integer.parseInt(quant.getText()));
+                JOptionPane.showMessageDialog(this, "Product Added", "Invoice Alert", 1);
+                clearFields();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error", "Invoice Alert", 2);
+            }
+        } catch(Exception e) {
+            System.out.println(e);
+            JOptionPane.showMessageDialog(this, "Error adding product", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void clearFields() {
+        pno.setText("");
+        pname.setText("");
+        compname.setText("");
+        price.setText("");
+        quant.setText("");
+        nlable.setText("");
+        qlable.setText("");
+    }
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        //to delete products from the table
+        // Delete products from the table
+        DB_Model_GA db = new DB_Model_GA();
+        DefaultTableModel tb = (DefaultTableModel)itable.getModel();
         
-         DB_Model_GA db=new DB_Model_GA();
-        DefaultTableModel tb=(DefaultTableModel)itable.getModel();
-        if(itable.getSelectionModel().isSelectionEmpty()){
-        JOptionPane.showMessageDialog(this,"Not Selected","Alert", 2);
+        if(itable.getSelectionModel().isSelectionEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please select a product to delete", "Alert", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        else{
-         if(itable.getSelectedRowCount()==1){ 
-         String no= tb.getValueAt(itable.getSelectedRow(), 0).toString();
-         String name=tb.getValueAt(itable.getSelectedRow(), 1).toString();
-         String company=tb.getValueAt(itable.getSelectedRow(), 2).toString();
-         String quantity=tb.getValueAt(itable.getSelectedRow(), 3).toString();
-         //tb.getva
-         System.out.println(no);
-         System.out.println(name);
-         System.out.println(company);
-         System.out.println(company);
-         
-        int st=0;
-        try{
-        st=db.delProduct(d.getText(), i.getText(), c.getText(), pno.getText(), pname.getText(), compname.getText(), Integer.parseInt(price.getText()));
-        tb.removeRow(itable.getSelectedRow());
         
-        if(st!=0){
-        
-        JOptionPane.showMessageDialog(this,"Product Deleted","Invoice Alert", 1);
-        }
-        else{
-                JOptionPane.showMessageDialog(this,"Error","Invoice Alert", 2);
-
-        }
-        }catch(Exception e){
-            System.out.println(e);
-        }
-        }
+        if(itable.getSelectedRowCount() == 1) {
+            String no = tb.getValueAt(itable.getSelectedRow(), 0).toString();
+            String name = tb.getValueAt(itable.getSelectedRow(), 1).toString();
+            String company = tb.getValueAt(itable.getSelectedRow(), 2).toString();
+            String quantity = tb.getValueAt(itable.getSelectedRow(), 3).toString();
+            
+            try {
+                // Delete from sales table
+                int st = db.delProduct(d.getText(), i.getText(), c.getText(), no, name, company, Integer.parseInt(quantity));
+                
+                if(st != 0) {
+                    // Add the quantity back to inventory
+                    db.sellupdate(no, -Integer.parseInt(quantity)); // Negative quantity to add back
+                    // Remove from table
+                    tb.removeRow(itable.getSelectedRow());
+                    JOptionPane.showMessageDialog(this, "Product Deleted", "Invoice Alert", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error deleting product", "Invoice Alert", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch(Exception e) {
+                System.out.println(e);
+                JOptionPane.showMessageDialog(this, "Error occurred while deleting product", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -310,24 +465,10 @@ public class InvoicePage2 extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void pnoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_pnoKeyReleased
-        // TODO add your handling code here:
-        DB_Model_GA db=new DB_Model_GA();
-        ResultSet rs;
-        try{
-        rs=db.checkProduct(pno.getText());
-        if(rs.next()){
-        nlable.setText("");
-        pname.setText(rs.getString("Name"));
-        compname.setText(rs.getString("Company"));
-            System.out.println(rs.getString("Name"));
-        }else{
-        nlable.setText("Item Not Found");
-        }
-        }catch(Exception e){
-            System.out.println(e);
-        }
-    }//GEN-LAST:event_pnoKeyReleased
+    private void pnoKeyReleased(java.awt.event.KeyEvent evt) {
+        // Remove the search functionality from key release
+        // Now it will only work when OK button is clicked
+    }
 
     private void quantKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_quantKeyReleased
         // TODO add your handling code here:

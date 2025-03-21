@@ -20,6 +20,12 @@ public class Inventory extends javax.swing.JFrame {
      */
     public Inventory() {
         initComponents();
+        // Set application icon
+        try {
+            setIconImage(new javax.swing.ImageIcon(getClass().getResource("/ghaziautos/ghazi_autos_logo.png")).getImage());
+        } catch (Exception e) {
+            System.out.println("Error loading application icon: " + e);
+        }
     }
 
     /**
@@ -73,6 +79,8 @@ public class Inventory extends javax.swing.JFrame {
         });
         getContentPane().add(price, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 360, 180, 30));
 
+        jLabel7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel7.setToolTipText("Go to Invoice Page");
         jLabel7.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel7MouseClicked(evt);
@@ -80,6 +88,8 @@ public class Inventory extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 170, 40));
 
+        jLabel8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel8.setToolTipText("Go to Sales");
         jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel8MouseClicked(evt);
@@ -87,6 +97,8 @@ public class Inventory extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 250, 170, 40));
 
+        jLabel9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel9.setToolTipText("Go to Main Page");
         jLabel9.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel9MouseClicked(evt);

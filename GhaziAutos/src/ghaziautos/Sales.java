@@ -20,20 +20,56 @@ public class Sales extends javax.swing.JFrame {
      */
     public Sales() {
         initComponents();
-        DB_Model_GA db=new DB_Model_GA();
-        DefaultTableModel tb=(DefaultTableModel)stable.getModel();
-        stable.getColumnModel().getColumn(0).setPreferredWidth(20);
-        ResultSet rs;
-        try{
-        rs=db.showSales();
-        while(rs.next()){
-        String data[]={rs.getString("date"),rs.getString("invoice"),rs.getString("customer"),rs.getString("pno"),rs.getString("Price"),rs.getString("quantity")};    
-        tb.addRow(data);
+        // Set application icon
+        try {
+            setIconImage(new javax.swing.ImageIcon(getClass().getResource("/ghaziautos/ghazi_autos_logo.png")).getImage());
+        } catch (Exception e) {
+            System.out.println("Error loading application icon: " + e);
         }
-        }catch(Exception e){
-            System.out.println(e);
+        DB_Model_GA db = new DB_Model_GA();
+        
+        // Initialize year combo box with actual years from database
+        try {
+            ResultSet years = db.getDistinctYears();
+            yearCombo.removeAllItems();
+            yearCombo.addItem("All");
+            while(years.next()) {
+                yearCombo.addItem(years.getString("year"));
+            }
+        } catch(Exception e) {
+            System.out.println("Error loading years: " + e);
         }
         
+        DefaultTableModel tb = (DefaultTableModel)stable.getModel();
+        stable.getColumnModel().getColumn(0).setPreferredWidth(20);
+        ResultSet rs;
+        try {
+            rs = db.showSales();
+            double totalSales = 0;
+            
+            while(rs.next()) {
+                int price = Integer.parseInt(rs.getString("Price"));
+                int quantity = Integer.parseInt(rs.getString("quantity"));
+                int total = price * quantity;
+                totalSales += total;
+                
+                String[] data = {
+                    rs.getString("date"),
+                    rs.getString("invoice"),
+                    rs.getString("customer"),
+                    rs.getString("pno"),
+                    rs.getString("Price"),
+                    rs.getString("quantity"),
+                    String.valueOf(total)
+                };
+                tb.addRow(data);
+            }
+            
+            totalLabel.setText("Total Sales: Rs. " + String.format("%,.2f", totalSales));
+            
+        } catch(Exception e) {
+            System.out.println(e);
+        }
     }
 
     /**
@@ -44,7 +80,14 @@ public class Sales extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
+        yearCombo = new javax.swing.JComboBox<>();
+        monthCombo = new javax.swing.JComboBox<>();
+        customerFilter = new javax.swing.JTextField();
+        productFilter = new javax.swing.JTextField();
+        filterButton = new javax.swing.JButton();
+        resetButton = new javax.swing.JButton();
+        exportButton = new javax.swing.JButton();
+        totalLabel = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -55,6 +98,104 @@ public class Sales extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        // Initialize month combo box
+        monthCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+        getContentPane().add(monthCombo, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 20, 80, -1));
+
+        // Add year combo box (it's populated in constructor)
+        getContentPane().add(yearCombo, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 20, 80, -1));
+
+        // Add customer filter
+        customerFilter.setToolTipText("Enter customer name to filter sales");
+        customerFilter.setText("Enter Customer Name");
+        customerFilter.setForeground(java.awt.Color.GRAY);
+        customerFilter.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (customerFilter.getText().equals("Enter Customer Name")) {
+                    customerFilter.setText("");
+                    customerFilter.setForeground(java.awt.Color.BLACK);
+                }
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (customerFilter.getText().isEmpty()) {
+                    customerFilter.setText("Enter Customer Name");
+                    customerFilter.setForeground(java.awt.Color.GRAY);
+                }
+            }
+        });
+        getContentPane().add(customerFilter, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 20, 120, -1));
+
+        // Add product filter
+        productFilter.setToolTipText("Enter product number to filter sales");
+        productFilter.setText("Enter Product Number");
+        productFilter.setForeground(java.awt.Color.GRAY);
+        productFilter.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (productFilter.getText().equals("Enter Product Number")) {
+                    productFilter.setText("");
+                    productFilter.setForeground(java.awt.Color.BLACK);
+                }
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (productFilter.getText().isEmpty()) {
+                    productFilter.setText("Enter Product Number");
+                    productFilter.setForeground(java.awt.Color.GRAY);
+                }
+            }
+        });
+        getContentPane().add(productFilter, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 20, 120, -1));
+
+        // Add labels above filters
+        javax.swing.JLabel customerLabel = new javax.swing.JLabel("Customer:");
+        customerLabel.setFont(new java.awt.Font("Tahoma", 1, 11));
+        getContentPane().add(customerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 5, -1, -1));
+
+        javax.swing.JLabel productLabel = new javax.swing.JLabel("Product:");
+        productLabel.setFont(new java.awt.Font("Tahoma", 1, 11));
+        getContentPane().add(productLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 5, -1, -1));
+
+        // Add labels for combo boxes
+        javax.swing.JLabel monthLabel = new javax.swing.JLabel("Month:");
+        monthLabel.setFont(new java.awt.Font("Tahoma", 1, 11));
+        getContentPane().add(monthLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 5, -1, -1));
+
+        javax.swing.JLabel yearLabel = new javax.swing.JLabel("Year:");
+        yearLabel.setFont(new java.awt.Font("Tahoma", 1, 11));
+        getContentPane().add(yearLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 5, -1, -1));
+
+        // Add filter button
+        filterButton.setText("Filter");
+        filterButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterButtonActionPerformed(evt);
+            }
+        });
+        getContentPane().add(filterButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 20, -1, -1));
+
+        // Add reset button
+        resetButton.setText("Reset");
+        resetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetButtonActionPerformed(evt);
+            }
+        });
+        getContentPane().add(resetButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 20, -1, -1));
+
+        // Add export button
+        exportButton.setText("Export to CSV");
+        exportButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportButtonActionPerformed(evt);
+            }
+        });
+        getContentPane().add(exportButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 20, -1, -1));
+
+        // Add total label
+        totalLabel.setFont(new java.awt.Font("Tahoma", 1, 14));
+        totalLabel.setText("Total Sales: Rs. 0.00");
+        getContentPane().add(totalLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 520, 300, -1));
+
+        // Navigation Labels
         jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel2MouseClicked(evt);
@@ -64,7 +205,7 @@ public class Sales extends javax.swing.JFrame {
 
         jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel3MouseClicked(evt);
+                handleLabel3Click(evt);
             }
         });
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 170, 40));
@@ -94,23 +235,185 @@ public class Sales extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-        // TODO add your handling code here:
+    private void filterButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        applyFilters();
+    }
+
+    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        yearCombo.setSelectedItem("All");
+        monthCombo.setSelectedItem("All");
+        
+        customerFilter.setText("Enter Customer Name");
+        customerFilter.setForeground(java.awt.Color.GRAY);
+        
+        productFilter.setText("Enter Product Number");
+        productFilter.setForeground(java.awt.Color.GRAY);
+        
+        refreshTable();
+    }
+
+    private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setDialogTitle("Save CSV File");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("CSV files (*.csv)", "csv"));
+            
+            if (fileChooser.showSaveDialog(this) == javax.swing.JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().toString();
+                if (!filePath.endsWith(".csv")) {
+                    filePath += ".csv";
+                }
+                
+                try (java.io.FileWriter writer = new java.io.FileWriter(filePath)) {
+                    // Write headers
+                    for (int i = 0; i < stable.getColumnCount(); i++) {
+                        writer.append(stable.getColumnName(i));
+                        if (i < stable.getColumnCount() - 1) {
+                            writer.append(",");
+                        }
+                    }
+                    writer.append("\n");
+                    
+                    // Write data rows
+                    for (int i = 0; i < stable.getRowCount(); i++) {
+                        for (int j = 0; j < stable.getColumnCount(); j++) {
+                            String value = stable.getValueAt(i, j) != null ? stable.getValueAt(i, j).toString() : "";
+                            // Escape commas and quotes in the value
+                            if (value.contains(",") || value.contains("\"")) {
+                                value = "\"" + value.replace("\"", "\"\"") + "\"";
+                            }
+                            writer.append(value);
+                            if (j < stable.getColumnCount() - 1) {
+                                writer.append(",");
+                            }
+                        }
+                        writer.append("\n");
+                    }
+                    
+                    // Write total
+                    writer.append("\nTotal Sales:,").append(totalLabel.getText().replace("Total Sales: ", ""));
+                }
+                
+                JOptionPane.showMessageDialog(this, "Export successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error exporting to CSV", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void applyFilters() {
+        try {
+            StringBuilder query = new StringBuilder("SELECT * FROM sales WHERE 1=1");
+            java.util.ArrayList<Object> params = new java.util.ArrayList<>();
+            
+            String year = yearCombo.getSelectedItem().toString();
+            String month = monthCombo.getSelectedItem().toString();
+            
+            if (!"All".equals(year)) {
+                query.append(" AND YEAR(date) = ?");
+                params.add(year);
+            }
+            
+            if (!"All".equals(month)) {
+                query.append(" AND MONTH(date) = ?");
+                params.add(month);
+            }
+            
+            String customerText = customerFilter.getText().trim();
+            if (!customerText.isEmpty() && !customerText.equals("Enter Customer Name")) {
+                query.append(" AND customer LIKE ?");
+                params.add("%" + customerText + "%");
+            }
+            
+            String productText = productFilter.getText().trim();
+            if (!productText.isEmpty() && !productText.equals("Enter Product Number")) {
+                query.append(" AND pno LIKE ?");
+                params.add("%" + productText + "%");
+            }
+            
+            // Execute query and update table
+            DB_Model_GA db = new DB_Model_GA();
+            ResultSet rs = db.executeQuery(query.toString(), params.toArray());
+            
+            DefaultTableModel tb = (DefaultTableModel) stable.getModel();
+            tb.setRowCount(0);
+            
+            double totalSales = 0;
+            while (rs.next()) {
+                int price = Integer.parseInt(rs.getString("Price"));
+                int quantity = Integer.parseInt(rs.getString("quantity"));
+                int total = price * quantity;
+                totalSales += total;
+                
+                String[] data = {
+                    rs.getString("date"),
+                    rs.getString("invoice"),
+                    rs.getString("customer"),
+                    rs.getString("pno"),
+                    rs.getString("Price"),
+                    rs.getString("quantity"),
+                    String.valueOf(total)
+                };
+                tb.addRow(data);
+            }
+            
+            totalLabel.setText("Total Sales: Rs. " + String.format("%,.2f", totalSales));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error applying filters", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void refreshTable() {
+        DB_Model_GA db = new DB_Model_GA();
+        DefaultTableModel tb = (DefaultTableModel) stable.getModel();
+        tb.setRowCount(0);
+        
+        try {
+            ResultSet rs = db.showSales();
+            double totalSales = 0;
+            
+            while (rs.next()) {
+                int price = Integer.parseInt(rs.getString("Price"));
+                int quantity = Integer.parseInt(rs.getString("quantity"));
+                int total = price * quantity;
+                totalSales += total;
+                
+                String[] data = {
+                    rs.getString("date"),
+                    rs.getString("invoice"),
+                    rs.getString("customer"),
+                    rs.getString("pno"),
+                    rs.getString("Price"),
+                    rs.getString("quantity"),
+                    String.valueOf(total)
+                };
+                tb.addRow(data);
+            }
+            
+            totalLabel.setText("Total Sales: Rs. " + String.format("%,.2f", totalSales));
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {
         new InvoicePage1().setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_jLabel2MouseClicked
+    }
 
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        // TODO add your handling code here:
+    private void handleLabel3Click(java.awt.event.MouseEvent evt) {
         new MainPage().setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_jLabel3MouseClicked
+    }
 
-    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        // TODO add your handling code here:
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {
         new Inventory().setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_jLabel4MouseClicked
+    }
 
     /**
      * @param args the command line arguments
@@ -156,4 +459,14 @@ public class Sales extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable stable;
     // End of variables declaration//GEN-END:variables
+
+    // Add new variables
+    private javax.swing.JComboBox<String> yearCombo;
+    private javax.swing.JComboBox<String> monthCombo;
+    private javax.swing.JTextField customerFilter;
+    private javax.swing.JTextField productFilter;
+    private javax.swing.JButton filterButton;
+    private javax.swing.JButton exportButton;
+    private javax.swing.JButton resetButton;
+    private javax.swing.JLabel totalLabel;
 }

@@ -16,6 +16,12 @@ public class InvoicePage1 extends javax.swing.JFrame {
      */
     public InvoicePage1() {
         initComponents();
+        // Set application icon
+        try {
+            setIconImage(new javax.swing.ImageIcon(getClass().getResource("/ghaziautos/ghazi_autos_logo.png")).getImage());
+        } catch (Exception e) {
+            System.out.println("Error loading application icon: " + e);
+        }
     }
 
     /**
@@ -45,6 +51,8 @@ public class InvoicePage1 extends javax.swing.JFrame {
         getContentPane().add(cname, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 220, 330, 30));
         getContentPane().add(date, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 120, 170, 30));
 
+        jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel2.setToolTipText("Go to Sales");
         jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel2MouseClicked(evt);
@@ -52,6 +60,8 @@ public class InvoicePage1 extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 250, 170, 40));
 
+        jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel4.setToolTipText("Go to Main Page");
         jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel4MouseClicked(evt);
@@ -59,6 +69,8 @@ public class InvoicePage1 extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 170, 40));
 
+        jLabel7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel7.setToolTipText("Go to Inventory");
         jLabel7.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel7MouseClicked(evt);

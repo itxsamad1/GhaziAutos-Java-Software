@@ -1,4 +1,3 @@
-
 package ghaziautos;
 import java.sql.*;
 
@@ -46,9 +45,9 @@ public class DB_Model_GA {
         return rs;
     }
     
-    public ResultSet searchProduct(String name){
+    public ResultSet searchProduct(String searchTerm){
      try{
-         String sql="select* from inventory where name LIKE '"+name+"%' ";
+         String sql="select* from inventory where Number LIKE '"+searchTerm+"%' OR Name LIKE '"+searchTerm+"%' OR Company LIKE '"+searchTerm+"%'";
        rs=st.executeQuery(sql);
      }
      catch(Exception e){
@@ -71,15 +70,15 @@ public class DB_Model_GA {
     public int updateInventory(String productNo ,String productName,String company,int quantity){
     int status=0;
     try{
-    String sql="update inventory set Name='"+productName+"' ,Company='"+company+"', Quantity='"+quantity+"' where Number='"+productNo+"'";
+    String sql="update inventory set Name='"+productName+"' ,Company='"+company+"', Quantity='"+quantity+"' where Number='"+productNo+"' AND Company='"+company+"'";
     status=st.executeUpdate(sql);
     }catch(Exception e){System.out.println(e);}
     return status;
     }
     
-    public ResultSet checkProduct(String productNo){
+    public ResultSet checkProduct(String productNo, String company){
      try{
-         String sql="select* from inventory where Number='"+productNo+"' ";
+         String sql="select* from inventory where Number='"+productNo+"' AND Company='"+company+"'";
        rs=st.executeQuery(sql);
      }
      catch(Exception e){
@@ -147,4 +146,77 @@ String sql = "SELECT * FROM inventory WHERE Number = '" + productNo + "' AND Qua
         return rs;
     }
     
+    public ResultSet executeQuery(String query, Object[] params) {
+        try {
+            PreparedStatement pstmt = con.prepareStatement(query);
+            for (int i = 0; i < params.length; i++) {
+                pstmt.setObject(i + 1, params[i]);
+            }
+            rs = pstmt.executeQuery();
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+        return rs;
+    }
+
+    public int deleteProduct(String productNo) {
+        int status = 0;
+        try {
+            String sql = "DELETE FROM inventory WHERE Number='" + productNo + "'";
+            status = st.executeUpdate(sql);
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+        return status;
+    }
+    
+    public ResultSet getProductCompanies(String productNo) {
+        try {
+            String sql = "SELECT DISTINCT Company FROM inventory WHERE Number='" + productNo + "'";
+            rs = st.executeQuery(sql);
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+        return rs;
+    }
+
+    public ResultSet getProductByNumberAndCompany(String productNo, String company) {
+        try {
+            String sql = "SELECT * FROM inventory WHERE Number='" + productNo + "' AND Company='" + company + "'";
+            rs = st.executeQuery(sql);
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+        return rs;
+    }
+
+    public ResultSet getDistinctYears() {
+        try {
+            String sql = "SELECT DISTINCT YEAR(date) as year FROM sales ORDER BY year DESC";
+            rs = st.executeQuery(sql);
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+        return rs;
+    }
+
+    public ResultSet getProductNames(String productNo) {
+        try {
+            String sql = "SELECT DISTINCT Name FROM inventory WHERE Number='" + productNo + "'";
+            rs = st.executeQuery(sql);
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+        return rs;
+    }
+
+    public ResultSet getProductCompanies(String productNo, String selectedName) {
+        try {
+            String sql = "SELECT DISTINCT Company FROM inventory WHERE Number='" + productNo + "' AND Name='" + selectedName + "'";
+            rs = st.executeQuery(sql);
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+        return rs;
+    }
 }

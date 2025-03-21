@@ -19,6 +19,12 @@ public class GhaziAutos extends javax.swing.JFrame {
      */
     public GhaziAutos() {
         initComponents();
+        // Set application icon
+        try {
+            setIconImage(new javax.swing.ImageIcon(getClass().getResource("/ghaziautos/ghazi_autos_logo.png")).getImage());
+        } catch (Exception e) {
+            System.out.println("Error loading application icon: " + e);
+        }
     }
 
     /**
