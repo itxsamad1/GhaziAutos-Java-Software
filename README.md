@@ -136,27 +136,7 @@ This software was custom-developed for a client's auto-vehicle parts warehouse t
 - View purchase history and outstanding balances
 - Apply discounts and loyalty rewards
 
-## 📸 Screenshots
 
-<div align="center">
-
-### 🏠 Dashboard
-![Dashboard](docs/images/dashboard.png)
-*Main dashboard showing key metrics and quick actions*
-
-### 📦 Inventory Management
-![Inventory](docs/images/inventory.png)
-*Comprehensive inventory management interface*
-
-### 💳 Point of Sale
-![POS](docs/images/pos.png)
-*User-friendly POS system for quick sales*
-
-### 📊 Reports
-![Reports](docs/images/reports.png)
-*Detailed analytics and reporting capabilities*
-
-</div>
 
 ## 🏗️ Architecture
 
@@ -215,8 +195,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Abdul Samad**
 - 🌐 GitHub: [@itxsamad1](https://github.com/itxsamad1)
-- 💼 LinkedIn: [Connect with me](https://linkedin.com/in/itxsamad1)
-- 📧 Email: contact@itxsamad.dev
+- 💼 LinkedIn: [Connect with me](https://linkedin.com/in/itxsammad1)
+- 📧 Email: itxsamad@icloud.com
 
 ## 🆘 Support
 
